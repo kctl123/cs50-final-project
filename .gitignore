@@ -1,0 +1,5 @@
+#specify which files and directories git should ignore 
+#for example, files that contain sensitive information like API keys or database credentials
+#or files that are generated during the build process and do not need to be tracked by version control
+
+data/*.db

@@ -1,0 +1,92 @@
+{%extends "layout.html"%}
+
+{%block main %}
+    <div class = "bg-light p-5 mb-5 rounded-3 shadow-sm text-center fw-bold"> 
+        <!--p-5 is padding on all sides, mb-5 is margin from bottom, rounded-3 gives rounded corners-->
+        <!--padding is distance between the element and div/container margin is distance between elements-->
+        <h2>Welcome to the Restaurant Recommender</h2>
+        <h4>Have you ever felt frustrated deciding where to eat at? Fear not, Restaurant Recommender is here to solve that 😀</h4>
+    </div>
+
+    <div class = "d-flex justify-content-center gap-5 text-center my-5 align-items-stretch">
+        <!--d-flex makes it horizontal like a row, gap-5 works like margin, align-items-stretch makes them same length-->
+
+        <div class="col-12 col-md-3">
+            <!--col-12 makes it such that on smaller devices like phone, it occupies the full 12 columns,
+                but on bigger devices it occupies 3 out of 12 columns-->
+            <div class = "card h-100 shadow-sm">
+                <!--makes card occupy whole height of the container it is in, used to standardize card size -->
+                <div class = "card-body">
+                    <i class="fi fi-rs-users-alt fs-1 text-primary"></i>
+                    <h3 class = "card-title fw-bold">Personalized </h3>
+                    <p>Get recommendations tailored to your unique tastes and preferences.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-3">
+            <div class = "card h-100 shadow-sm">
+                <div class = "card-body">
+                    <i class="fi fi-rs-restaurant fs-1 text-primary"></i>
+                    <h3 class = "card-title fw-bold">Extensive Database </h3>
+                    <p>Access a wide variety of restaurants from different cuisines and locations.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-3">
+            <div class = "card h-100 shadow-sm">
+                <div class = "card-body">
+                    <i class="fi fi-rs-time-fast fs-1 text-primary"></i>
+                    <h3 class = "card-title fw-bold">Quick and Easy</h3>
+                    <p>Find the perfect restaurant in seconds!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class = "fst-italic text-center">See what our users are saying</h2>
+
+    <div class="reviewscrollmenu d-flex overflow-auto"> 
+        <!--d-flex ensures horizontal layout, overflow-auto adds scroll bar when needed-->
+        <div class="d-flex flex-row flex-nowrap gap-4">
+            
+            <div class="review-card card shadow-sm flex-shrink-0 p-3 my-5 mx-5 bg-secondary-subtle border-0">
+                <!--flex-shrink-0 prevents the card from shrinking, p-3 is padding, mx and my is margin -->
+                <p class="fs-4 mb-2">★★★★★</p>
+                <!-- fs4 is font size4 mb-2 is margin from bottom-->
+                <p class="mb-3">"I never knew there was a hidden gem ramen spot just around the corner. The Recommender nailed my craving perfectly!"</p>
+                <footer class="blockquote-footer">John Tan., Food Blogger</footer>
+            </div>
+
+            <div class="review-card card shadow-sm flex-shrink-0 p-3 my-5 mx-5 bg-secondary-subtle border-0">
+                <p class="fs-4 mb-2">★★★★★</p>
+                <p class="mb-3">"Planning date night used to be a headache. Now I just plug in the criteria and get amazing, unique options every time."</p>
+                <footer class="blockquote-footer">Jimmy Lim., Happy Customer</footer>
+            </div>
+
+            <div class="review-card card shadow-sm flex-shrink-0 p-3 my-5 mx-5 bg-secondary-subtle border-0">
+                <p class="fs-4 mb-2">★★★★★</p>
+                <p class="mb-3">"Extremely accurate suggestions! It saved our last group dinner from turning into a 30-minute debate."</p>
+                <footer class="blockquote-footer">Xiao Ming., Group Organizer</footer>
+            </div>
+
+            <div class="review-card card shadow-sm flex-shrink-0 p-3 my-5 mx-5 bg-secondary-subtle border-0">
+                <p class="fs-4 mb-2">★★★★★</p>
+                <p class="mb-3">"The 'quick and easy' promise is real. Went from hungry to reservations in less than 60 seconds. Highly recommend!"</p>
+                <footer class="blockquote-footer">Xiao Hua., Busy Parent</footer>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-3 my-4"> <!--d-flex ensures horizontal layout gap-3 ensures consistent spacing my-4 adds vertical padding -->
+        <button class="btn btn-primary" onclick="location.href='/recommend'">Get Recommendation</button>
+        <!--onclick =  'location.href' is basically same thing as an anchor tag-->
+        <button class="btn btn-secondary" onclick="location.href='/about'">About</button>
+    </div>
+
+    <div class = "text-center my-5">
+    <h6> Uicons by <a href="https://www.flaticon.com/uicons">Flaticon</a> </h6>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,8 @@
+body { font-family: Arial, sans-serif; background:#f6f6f6; padding:20px; }
+h1 { color: #2b6cb0; }
+
+.reviewscrollmenu{ overflow-x:auto; white-space:nowrap; }
+.reviewcard{min-width: 300px; 
+            max-width: 90vw; /* Ensures it doesn't exceed screen width */
+            border-radius: 12px;
+            scroll-snap-align: start;} /* Optional: Snaps the scroll to the start of each card */
