@@ -17,15 +17,41 @@
                 <div>
                     <a class="nav-link d-inline text-light me-3" href="/recommend">Get Recommendation</a>
                     <a class="nav-link d-inline text-light" href="/about">About</a>
+
+                    {% if session.get('username') %}
+                    <a class = "btn btn-outline-light ms-3" href="/logout" role="button">Logout</a>
+                    {% else %}
+                    <a class = "btn btn-outline-light ms-3" href="/login" role="button">Login</a>
+                    {% endif %}
                 </div>
             </div>
         </nav>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container mt-3">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 
-        <main class="">
-            {% block main %}{% endblock %}
-        </main>
+    <!--get_flashed_messages(with_categories = true) returns a list of (category,message) pairs
+        rest is jinjja syntax, when we do flash("message", "category") this code takes the respective placeholder values-->
+
+
+    <main class="">
+        {% block main %}{% endblock %}
+    </main>
+
     </body>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
 
 </html>

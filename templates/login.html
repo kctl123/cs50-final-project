@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+    <div class = "container mt-5 text-center">  
+        <h1>Restaurant Recommender</h1>
+        <h3>Log in</h3>
+        <form action = "/login" method = "POST" class="container mt-5" style="max-width: 600px;">
+            <input autofocus autocomplete = "off" type="text" name="username" placeholder="Username" class="form-control mb-3" required>
+            <input type="password" name="password" placeholder="Password" class="form-control mb-3" required>
+            <button type="submit" class="btn btn-primary">Log In</button>
+            <a href = "/register" class="btn btn-link">Don't have an account? </a>
+            <br>
+            <a href = "/forgot" class="btn btn-link mt-3">Forgot your password? </a>
+        </form>
+    </div>
+
+{% endblock %}

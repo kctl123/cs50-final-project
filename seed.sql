@@ -1,0 +1,15 @@
+INSERT INTO cuisines (name) VALUES
+    ('Italian'),
+    ('Chinese'),
+    ('Malay'),
+    ('Indian'),
+    ('Mexican'),
+    ('Spanish'),
+    ('Indonesian'),
+    ('French'),
+    ('Peranakan'),
+    ('Japanese'),
+    ('Thai'),
+    ('Fusion'),
+    ('Korean'),
+    ('Filipino');

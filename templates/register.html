@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block main %}
+    <div class = "container mt-5 text-center">   
+        <h1>Restaurant Recommender</h1>
+        <h3>Register</h3>
+        <form action = "/register", method = "post" class="container mt-5" style="max-width: 600px;">
+            <input autofocus autocomplete = "off" type="text" name="username" placeholder="Username" class="form-control mb-3" required>
+            <input type="password" id = "password" name="password" placeholder="Password" class="form-control mb-3" required>
+            <div id = "password_hint" style="color: red; font-size: 0.9em;"></div>
+            <div class="mb-3 text-start">
+                <select name = "security_question" class="form-select" required>
+                    <option value="" disabled selected>Select a security question</option>
+                    <option>What is your favorite color?</option>
+                    <option>What is your favorite animal?</option>
+                    <option>What city were you born in?</option>
+                    <option>How many siblings do you have?</option>
+                    <option>Which primary school did you attend?</option>
+                </select>
+                <input type="text" name="security_answer" placeholder="Your Answer" class="form-control mt-2" required>
+            </div>
+            <button id = "submit_button" type="submit" class="btn btn-primary">Register</button>
+            <a href = "/login" class="btn btn-link">Already have an account? </a>
+        </form>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const passwordHint = document.getElementById('password_hint');
+        submit_button = document.getElementById('submit_button');
+        submit_button.disabled = true;
+
+        passwordInput.addEventListener('input', function() {
+            const password = passwordInput.value;
+            let messages = [];
+
+            if (password.length <8){
+                messages.push('Password must be at least 8 characters long.');
+                submit_button.disabled = true;
+            }
+
+            if (!/[A-Z]/.test(password)) {
+                messages.push("Password must contain at least 1 capital letter");
+                submit_button.disabled = true;
+            }
+
+            if (!/[a-z]/.test(password)) {
+                messages.push(' Password must contain at least one lowercase letter.');
+                submit_button.disabled = true;
+            }
+
+            if (!/[0-9]/.test(password)){
+                messages.push(' Password must contain at least one digit.');
+                submit_button.disabled = true;
+            }
+
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                messages.push(' Password must contain at least one special character.');
+                submit_button.disabled = true;
+            }
+
+            if (messages.length === 0) {
+                passwordHint.textContent = 'Strong password!';
+                passwordHint.style.color = 'green';
+                submit_button.disabled = false;
+            } 
+            
+            else {
+                passwordHint.innerHTML = messages.join('<br>');
+                passwordHint.style.color = 'red';
+                submit_button.disabled = true;
+            }
+        });
+    </script>
+{% endblock %}

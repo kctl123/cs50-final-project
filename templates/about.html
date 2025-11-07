@@ -1,17 +1,50 @@
 {% extends "layout.html" %}
 
 {% block main %}
-    <h2>About the Restaurant Recommender</h2>
-    <p>The Restaurant Recommender is a web application designed to help users discover new dining options based on their preferences. 
-        Whether you're craving a specific cuisine or looking for something new, our recommender system uses a database of restaurants to suggest places you'll love.</p>
 
-    <h3>Features</h3>
-    <ul>
-        <li>Personalized restaurant recommendations</li>
-        <li>Extensive database of eateries</li>
-        <li>User-friendly interface</li>
-    </ul>
+    <div class="card shadow-sm p-4 mb-4">
+        <h1 class="text-center mb-3">🍽️ About the Restaurant Recommender</h1>
+        <p class="lead text-center">
+            Discover restaurants tailored to your cravings, preferences, and budget.
+            Our recommendation engine helps you decide where to eat — quickly and effortlessly.
+        </p>
+    </div>
 
-    <h3>Contact Us</h3>
-    <p>If you have any questions or feedback, feel free to reach out at keefechia132@gmail.com.</p>
+    <div class="card shadow-sm p-4 mb-4 text-center">
+        <h2 class="text-center mb-3">✨ Features</h2>
+        <ul class="list-group list-group-flush text-start">
+            <li class="list-group-item">Personalized restaurant recommendations</li>
+            <li class="list-group-item">Extensive database of eateries</li>
+            <li class="list-group-item">User-friendly interface</li>
+            <li class="list-group-item">Filter by price or budget</li>
+        </ul>
+    </div>
+
+    <div class="card shadow-sm p-4 mb-4 text-center">
+        <h2 class="mb-3">🧰 Tech Stack</h2>
+        <div>
+            <span class="badge bg-primary m-1">Python & Flask</span>
+            <span class="badge bg-primary m-1">HTML, CSS, Bootstrap</span>
+            <span class="badge bg-primary m-1">SQLite</span>
+            <span class="badge bg-primary m-1">CS50 Libraries</span>
+            <span class="badge bg-primary m-1">Git & GitHub</span>
+        </div>
+    </div>
+
+    <div class="card shadow-sm p-4 mb-4">
+        <h2 class="text-center mb-3">💡 Motivation</h2>
+        <blockquote class="blockquote text-center mt-2 mb-0">
+            <p>"Deciding where to eat is always a struggle — so I built a solution."</p>
+            <footer class="blockquote-footer">Created as my CS50 Final Project</footer>
+        </blockquote>
+    </div>
+
+    <div class="card shadow-sm p-4 mb-4 text-center">
+        <h2 class="mb-3">📩 Contact Me</h2>
+        <p>Have feedback or questions? Reach out!</p>
+        <p><strong>Email:</strong> keefechia132@gmail.com</p>
+        <p><strong>Instagram:</strong> @keefe_chia</p>
+    </div>
+
+</div>
 {% endblock %}

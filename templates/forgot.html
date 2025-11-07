@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+    <div class = "container mt-5 text-center">
+        <h1>Restaurant Recommender</h1>
+        <h3>Reset Password</h3>
+        <form action = "/reset" method = "POST" style="max-width: 600px;" class = "container mt-5 text-center">
+            <input type="text" name="username" placeholder="Username" class="form-control mb-3" required>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+{% endblock %}

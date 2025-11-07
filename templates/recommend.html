@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+<div class="container mt-5 text-center">
+    <h1 class="fw-bold mb-4">Restaurant Recommender</h1>
+
+    {% if not "user_id" in session %}
+        <p>Do you have an account?</p>
+        <a href="/login" class="btn btn-primary me-3">Yes</a>
+        <a href="/register" class="btn btn-secondary">No</a>
+
+    {% else %}
+        {% if prefs %}
+            <div class="card shadow-sm p-3 mb-3">
+                <h5>Your Preferences:</h5>
+                <p><strong>Region:</strong> {{ prefs.region }}</p>
+                <p><strong>Budget:</strong> {{ prefs.budget }}</p>
+                <p><strong>Occasion:</strong> {{ prefs.occasion }}</p>
+                <p><strong>Cuisine:</strong> {{ prefs.cuisine }}</p>
+                <p><strong>Dietary Restrictions:</strong> {{ prefs.dietary_restrictions }}</p>
+                <p><strong>Vibe:</strong> {{ prefs.vibe }}</p>
+            </div>
+
+            <div class="card shadow-sm p-3">
+                <h5>Recommended Restaurants:</h5>
+                <p>Recommendations will appear here based on your preferences.</p>
+            </div>
+
+        {% else %}
+            <p>No preferences submitted yet.</p>
+            <a href="/dashboard" class="btn btn-success mt-3">Set Your Preferences</a>
+        {% endif %}
+    {% endif %}
+</div>
+
+{% endblock %}
