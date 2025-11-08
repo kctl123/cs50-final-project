@@ -5,22 +5,22 @@
     <div class = "container mt-5 text-center"> 
         <h1>Restaurant Recommender</h1>
         <h3>Reset Password</h3>
-        <div class="container mt-5 text-center"
-        <form action = "/reset_password" method = "POST" style = "max-width:600px;">
-                <input type="hidden" name="username" value="{{ username }}">
-                <select name = "security_question" class="form-select" required>
-                    <option value="" disabled selected>Select your security question</option>
-                    <option>What is your favorite color?</option>
-                    <option>What is your favorite animal?</option>
-                    <option>What city were you born in?</option>
-                    <option>How many siblings do you have?</option>
-                    <option>Which primary school did you attend?</option>
-                </select>
-                <input type="text" name="security_answer" placeholder="Your Answer" class="form-control mt-2" required>
-                <input id = new_password type="password" name="password" placeholder="New Password" class="form-control mt-2" required>
-                <div id = "password_hint" style="color: red; font-size: 0.9em;"></div>
-                <button id = "submit_button" type="submit" class="btn btn-primary mt-3">Reset Password</button>            
-        </form>
+        <div class="container mt-5 text-center">
+            <form action = "/reset" method = "POST" style = "max-width:600px;">
+                    <input type="hidden" name="username" value="{{ username }}">
+                    <select name = "security_question" class="form-select" required>
+                        <option value="" disabled selected>Select your security question</option>
+                        <option>What is your favorite color?</option>
+                        <option>What is your favorite animal?</option>
+                        <option>What city were you born in?</option>
+                        <option>How many siblings do you have?</option>
+                        <option>Which primary school did you attend?</option>
+                    </select>
+                    <input type="text" name="security_answer" placeholder="Your Answer" class="form-control mt-2" required>
+                    <input id = new_password type="password" name="new_password" placeholder="New Password" class="form-control mt-2" required>
+                    <div id = "password_hint" style="color: red; font-size: 0.9em;"></div>
+                    <button id = "submit_button" type="submit" class="btn btn-primary mt-3">Reset Password</button>            
+            </form>
         </div>  
     </div>
 

@@ -1,4 +1,4 @@
-from flask import Flask,render_template,request,redirect,session,flash
+from flask import Flask,render_template,request,redirect,session,flash,g
 import sqlite3, os
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -12,24 +12,19 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
 
 
-db_dir = os.path.join(os.path.dirname(__file__), "data")
-os.makedirs(db_dir, exist_ok=True)
+DATABASE = "data/restaurants.db"
 
-DB_PATH = os.path.join(db_dir, "restaurants.db")
+def get_db():
+    if "db" not in g: #g is a special flask object that is created whenever a new request is loaded 
+        g.db = sqlite3.connect(DATABASE) #creating a key value pair 
+        g.db.row_factory = sqlite3.Row  # access columns by name
+    return g.db
 
-#using os.path.join ensures it works across computers like Mac and Windows
-#using os.path.dirname(__file__) gets the directory of current file app.py 
-#then we append "data" to that path
-#end result is that DB_PATH points to C:\Users\Keefe\Downloads\cs50-final-project\data\restaurants.
-
-conn = sqlite3.connect(DB_PATH, check_same_thread=False)
-#creates connection to restaurant.database -- if restaurants.db does not exist, it will be created
-
-db = conn.cursor()
-#creates a cursor object to interact with the database such that i can do db.execute("SQL QUERY")
-
-db.row_factory = sqlite3.Row
-#this allows us to access columns by name like user["username"] instead of user[0]
+@app.teardown_appcontext
+def close_db(e=None):
+    db = g.pop("db", None)
+    if db is not None:
+        db.close()
 
 @app.route("/")
 def index():
@@ -41,6 +36,7 @@ def about():
 
 @app.route("/recommend", methods=["GET", "POST"])
 def recommend():
+    db = get_db()
     user_id = session.get("user_id")
 
     if not user_id:
@@ -91,7 +87,7 @@ def recommend():
     
         db.execute("INSERT INTO preferences (user_id, region, budget, occasion, cuisine, dietary_restrictions, vibe) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 (user_id, region, budget, occasion, cuisine_str, dietary_restrictions_str, vibe_str))
-        conn.commit()
+        db.commit()
     
     prefs = db.execute("SELECT * FROM preferences WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user_id,)).fetchone()
 
@@ -100,6 +96,7 @@ def recommend():
 
 @app.route("/register", methods=["GET","POST"])
 def register():
+    db = get_db()
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
@@ -130,7 +127,7 @@ def register():
         
     
         db.execute("INSERT INTO users (username, password_hash, security_question, security_answer) VALUES (?, ?, ?, ?)", (username, hashed_password, security_question, security_answer))
-        conn.commit()
+        db.commit()
 
         flash("Registration successful! Please log in.", "success")
         return redirect("/login")
@@ -139,6 +136,7 @@ def register():
 
 @app.route("/login", methods=["GET","POST"])
 def login():
+    db = get_db()
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
@@ -175,6 +173,7 @@ def dashboard():
 
 @app.route("/forgot", methods = ["GET", "POST"])
 def forgot():
+    db = get_db()
     if request.method == "POST":
         username = request.form.get("username")
 
@@ -185,14 +184,15 @@ def forgot():
         user = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
         if user is None:
             flash("Username not found.", "danger")
-            return redirect("/forgot")
+            return redirect("/forgot") 
         
-        return render_template("reset.html", username=username)
+        return render_template("reset.html", username=username) #running the reset.html template UNDER the /forgot route, the /reset route here is NOT USED  until the user clicks submit as that is the form action
     
     return render_template("forgot.html")
 
 @app.route("/reset", methods = ["GET", "POST"])
 def reset():
+    db = get_db()
     if request.method == "POST":
         user = request.form.get("username")
         security_question = request.form.get("security_question")
@@ -210,13 +210,13 @@ def reset():
             return redirect("/reset")
         
         user_record = db.execute("SELECT * FROM users WHERE username = ?",  (user,)).fetchone()
-        if security_question != user_record["security_question"] or security_answer != user_record["security_answer"]:
+        if security_question != user_record["security_question"] or security_answer.lower() != (user_record["security_answer"]).lower():
             flash("Security question or answer is incorrect.", "danger")
             return redirect("/reset")
         
         hashed_new_password = generate_password_hash(new_password)
         db.execute("UPDATE users SET password_hash = ? WHERE username = ?", (hashed_new_password, user))
-        conn.commit()
+        db.commit()
         flash("Password reset successful! Please log in with your new password.", "success")
         return redirect("/login")
 
