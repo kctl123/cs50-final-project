@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS restaurants (
     latitude REAL,
     longitude REAL,
     raw_properties TEXT,                     -- store full GeoJSON properties for reference
+    osm_id TEXT;                             -- store OSM id as text
+    osm_type TEXT;                           -- 'node'|'way'|'relation'
 
     -- Foreign key relationships
     FOREIGN KEY (neighborhood_id) REFERENCES neighborhoods(id)
