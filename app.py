@@ -48,17 +48,17 @@ def recommend():
         #Single-select fields
         region = request.form.get("region")
         budget = request.form.get("budget")
-        occasion = request.form.get("occasion")
+        #occasion = request.form.get("occasion")
 
         #Multi-select fields
         cuisine = request.form.getlist("cuisine")
         dietary_restrictions = request.form.getlist("diet")
-        vibe = request.form.getlist("vibe")
+        #vibe = request.form.getlist("vibe")
 
         #Convert lists to comma-separated strings for storage
         cuisine_str = ",".join(cuisine)
         dietary_restrictions_str = ",".join(dietary_restrictions)
-        vibe_str = ",".join(vibe)
+        #vibe_str = ",".join(vibe)
 
         #Server-side validation
         if not region:
@@ -69,7 +69,7 @@ def recommend():
             flash("Budget is required.", "danger")
             return redirect("/dashboard")
         
-        if not occasion:
+        #if not occasion:
             flash("Occasion is required.", "danger")
             return redirect("/dashboard")
         
@@ -81,12 +81,12 @@ def recommend():
             flash("At least one dietary restriction must be selected.", "danger")
             return redirect("/dashboard")
         
-        if not vibe:
+        #if not vibe:
             flash("At least one vibe must be selected.", "danger")
             return redirect("/dashboard")
     
-        db.execute("INSERT INTO preferences (user_id, region, budget, occasion, cuisine, dietary_restrictions, vibe) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (user_id, region, budget, occasion, cuisine_str, dietary_restrictions_str, vibe_str))
+        db.execute("INSERT INTO preferences (user_id, region, budget, cuisine, dietary_restrictions) VALUES (?, ?, ?, ?, ?)",
+                (user_id, region, budget, cuisine_str, dietary_restrictions_str,))
         db.commit()
     
     prefs = db.execute("SELECT * FROM preferences WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user_id,)).fetchone()

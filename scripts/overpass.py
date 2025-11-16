@@ -22,18 +22,19 @@ def infer_cuisine_from_name(name: str) -> str:
     }
 
     single_word_keywords = {
-        "japanese": ["ramen", "sushi", "japan", "donburi", "yakitori", "udon", "sashimi", "tempura", "tonkatsu", "teppanyaki", "izakaya", "bento", "matcha", "ramenya", "niku","tokyo","teppei","syokudo","shokudo","japanese"],
+        "japanese": ["ramen", "sushi", "japan", "donburi", "yakitori", "udon", "sashimi", "tempura", "tonkatsu", "teppanyaki","maki", "izakaya", "bento", "matcha", "ramenya", "niku","tokyo","teppei","syokudo","shokudo","japanese"],
         "korean": ["korean", "korea","bibimbap", "kimchi", "bulgogi", "tteokbokki", "soju", "jjigae", "galbi", "samgyeopsal", "hotpot", "seoul", "mandu"],
         "chinese": ["din", "claypot","chinese", "dimsum", "noodle", "dumpling", "wok", "cantonese", "sichuan", "peking", "bao", "springroll", "wonton", "friedrice", "hotpot", "chow", "cuisine","canton"],
         "thai": ["thai", "bangkok", "padthai", "tomyum",  "basil", "mango", "coconut", "lemongrass", "seafood", "spicy"],
         "indian": ["indian", "tandoori", "curry", "masala", "biryani", "naan", "samosa", "tikka", "paneer", "roti", "dal", "chaat", "sizzler", "korma"],
         "italian": ["italian", "pasta", "pizza", "spaghetti", "risotto", "ristorante", "lasagna", "gelato", "penne", "bruschetta", "carbonara", "focaccia", "mozzarella", "parmigiana", "tiramisu"],
-        "western": ["steak", "burger", "grill", "bbq", "fries", "ribs", "meat", "club", "smokehouse", "bacon", "chicken", "pizza", "sandwichbar"],
+        "western": ["cow","steak", "burger", "grill", "bbq", "fries", "ribs", "meat", "club", "smokehouse", "bacon", "chicken", "pizza", "sandwichbar"],
         "malay": ["penyet","geprek","goreng","malay", "nasi", "lemak", "satay", "kampong", "mee", "laksa", "rojak" , "ayam", "rendang", "sambal", "cendol", "goreng"],
         "vietnamese": ["pho", "vietnamese", "banh",  "springroll",   "buncha", "lemongrass", "saigon", "hanoi"],
         "cafe": ["coffee", "cafe", "espresso", "latte", "cappuccino", "mocha", "brew", "bakery", "toast", "smoothie", "waffle", "donut", "tea", "bakery", "brunch","starbucks"],
         "mexican": ["mexican","guzman","stuff'd","taco", "burrito", "quesadilla", "enchilada", "fajita", "nachos", "guacamole","churro", "salsa", "tamale", "carnitas", "jalapeno", "hacienda", "taqueria", "mexico"]
     }
+
 
     for cuisine, phrases in multi_word_keywords.items():
         for phrase in phrases:
