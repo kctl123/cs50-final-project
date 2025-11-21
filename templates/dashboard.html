@@ -27,7 +27,7 @@
             <div class="card p-3 mb-3 shadow-sm">
                 <h5 class="mb-3">Cuisine Type</h5>
                 <div class="d-flex flex-wrap gap-2">
-                    {% for cuisine in ["Japanese","Korean","Chinese","Thai","Indian","Italian","Western","Malay","Vietnamese","Mexican","Cafe","Local"] %}
+                    {% for cuisine in ["Japanese","Korean","Chinese","Thai","Indian","Italian","Western","Malay","Vietnamese","Mexican","Local"] %}
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" name="cuisine" value="{{ cuisine }}" id="cuisine{{ cuisine }}">
                         <label class="form-check-label" for="cuisine{{ cuisine }}">{{ cuisine }}</label>
@@ -36,6 +36,7 @@
                 </div>
             </div>
 
+            <!--
             <div class="card p-3 mb-3 shadow-sm">
                 <h5 class="mb-3">Dietary Restrictions</h5>
                 <div class="d-flex flex-wrap gap-2">
@@ -47,16 +48,28 @@
                     {% endfor %}
                 </div>
             </div>
-
+            -->
            
             <div class="card p-3 mb-3 shadow-sm">
-                <h5 class="mb-3">Budget per Person</h5>
+                <h5 class="mb-3">Category</h5>
+                <div class="form-group">
+                    <select class="form-select" id="category" name="category" required>
+                        <option value="" disabled selected>Select category</option>
+                        {% for category in  ["Restaurant", "Cafe", "Hawker", "Fast Food", "Bakery", 
+                        "Dessert", "Bubble Tea", "Supermarket Food", "Food Court"] %}
+                        <option value = "{{category}}">{{category}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="card p-3 mb-3 shadow-sm">
+                <h5 class="mb-3">Select a budget</h5>
                 <div class="form-group">
                     <select class="form-select" id="budget" name="budget" required>
                         <option value="" disabled selected>Select budget</option>
-                        <option value="cheap">Cheap (Below $15)</option>
-                        <option value="medium">Medium ($15 - $40)</option>
-                        <option value="expensive">Expensive (Above $40)</option>
+                        <option value="cheap">Below $15</option>
+                        <option value="medium">Above $15 - $40 (max)</option>
                     </select>
                 </div>
             </div>

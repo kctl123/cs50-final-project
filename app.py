@@ -12,7 +12,7 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
 
 
-DATABASE = "data/restaurants.db"
+DATABASE = "data/copy.db"
 
 def get_db():
     if "db" not in g: #g is a special flask object that is created whenever a new request is loaded 
@@ -47,17 +47,19 @@ def recommend():
 
         #Single-select fields
         region = request.form.get("region")
+        region = region.capitalize()
         budget = request.form.get("budget")
+        category = request.form.get("category")
         #occasion = request.form.get("occasion")
 
         #Multi-select fields
         cuisine = request.form.getlist("cuisine")
-        dietary_restrictions = request.form.getlist("diet")
+        #dietary_restrictions = request.form.getlist("diet")
         #vibe = request.form.getlist("vibe")
 
         #Convert lists to comma-separated strings for storage
         cuisine_str = ",".join(cuisine)
-        dietary_restrictions_str = ",".join(dietary_restrictions)
+        #dietary_restrictions_str = ",".join(dietary_restrictions)
         #vibe_str = ",".join(vibe)
 
         #Server-side validation
@@ -77,7 +79,11 @@ def recommend():
             flash("At least one cuisine must be selected.", "danger")
             return redirect("/dashboard")
         
-        if not dietary_restrictions:
+        if not category:
+            flash("At least one category must be selected.", "danger")
+            return redirect("/dashboard")
+        
+        #if not dietary_restrictions:
             flash("At least one dietary restriction must be selected.", "danger")
             return redirect("/dashboard")
         
@@ -85,13 +91,42 @@ def recommend():
             flash("At least one vibe must be selected.", "danger")
             return redirect("/dashboard")
     
-        db.execute("INSERT INTO preferences (user_id, region, budget, cuisine, dietary_restrictions) VALUES (?, ?, ?, ?, ?)",
-                (user_id, region, budget, cuisine_str, dietary_restrictions_str,))
+        db.execute("INSERT INTO preferences (user_id, region, budget, cuisine, category) VALUES (?, ?, ?, ?, ?)",
+                (user_id, region, budget, cuisine_str, category))
         db.commit()
     
     prefs = db.execute("SELECT * FROM preferences WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user_id,)).fetchone()
+    cuisines = prefs["cuisine"].split(",")
+    cuisines = [c.lower() for c in cuisines]
+    placeholders = ",".join(["?"] * len(cuisines))
 
-    return render_template("recommend.html", prefs=prefs)
+    q = f"""
+    SELECT * 
+    FROM(
+        SELECT *,
+            (CASE WHEN cuisine IN ({placeholders}) AND category = ? THEN 5 ELSE 0 END +
+             CASE WHEN price_range = ? THEN 2 ELSE 0 END 
+            ) AS score
+        FROM restaurants
+        WHERE cuisine != 'unknown'
+        AND region = ?
+    ) AS ranked
+    WHERE score >= 5
+    ORDER BY score DESC
+    LIMIT 50;
+        """
+    #parantheses are necessary due to SQL precedence, it will do AND first 
+    #with parantheses it works as intended, without parantheses it will be
+    #if cuisine matches OR (category and region matches)
+    #WHERE is evaluated before SELECT, cannot use something like SCORE that exists only after SELECT
+    #use HAVING as it is evaluated after SELECT
+    #max score is 8, each case is assessed individually 
+    #When creating a separate score column, must use a comma after SELECT to separate the columns
+    #Must use + when using multiple CASE
+    params = cuisines + [category, budget, region]
+    
+    filtered_restaurants = db.execute(q, params).fetchall()
+    return render_template("recommend.html", prefs=prefs, filtered_restaurants = filtered_restaurants)
     
 
 @app.route("/register", methods=["GET","POST"])

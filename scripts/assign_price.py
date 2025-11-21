@@ -52,6 +52,7 @@ def main():
         pass
     
     rows = db.execute("SELECT name, id, cuisine FROM restaurants").fetchall()
+    count = 0
 
     for row in rows:
         name = row["name"]
@@ -72,9 +73,12 @@ def main():
         if not matched:
             continue 
 
+        count += 1
 
         db.execute("UPDATE restaurants SET price_range = ? WHERE id = ?", (matched, restaurant_id))
         print(f"{name} has been updated with a price range of {matched}")
+
+    print(f"{count} restaurants have been enriched with prices")
 
     conn.commit()
     conn.close()

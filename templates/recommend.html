@@ -18,14 +18,41 @@
                 <p><strong>Budget:</strong> {{ prefs.budget }}</p>
                 <!-- <p><strong>Occasion:</strong> {{ prefs.occasion }}</p> -->
                 <p><strong>Cuisine:</strong> {{ prefs.cuisine }}</p>
+                <p><strong>Category:</strong> {{ prefs.category }}</p> 
+                <a class="btn btn-primary" href="/dashboard" role="button">Edit</a>
                 <!-- <p><strong>Dietary Restrictions:</strong> {{ prefs.dietary_restrictions }}</p> -->
                 <!-- <p><strong>Vibe:</strong> {{ prefs.vibe }}</p> -->
             </div>
 
             <div class="card shadow-sm p-3">
                 <h5>Recommended Restaurants:</h5>
-                <p>Recommendations will appear here based on your preferences.</p>
+
+                {%if not filtered_restaurants %}
+                    <p>No such eating establishment</p>
+                {% endif %}    
+
+                {% if filtered_restaurants %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Restaurants</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for restaurant in filtered_restaurants%}
+                            <tr>
+                                <td><a href = "https://www.google.com/search?q={{restaurant['name']}}" class = "link-dark">{{restaurant["name"] | capitalize}}</a></td>
+                                <td>{{restaurant["address"] | capitalize}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    {% endif %}
+               
+                </table>
             </div>
+
 
         {% else %}
             <p>No preferences submitted yet.</p>
