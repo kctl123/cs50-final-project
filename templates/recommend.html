@@ -3,62 +3,159 @@
 {% block main %}
 
 <div class="container mt-5 text-center">
+
     <h1 class="fw-bold mb-4">Restaurant Recommender</h1>
 
     {% if not "user_id" in session %}
-        <p>Do you have an account?</p>
-        <a href="/login" class="btn btn-primary me-3">Yes</a>
-        <a href="/register" class="btn btn-secondary">No</a>
+        <div class="text-center">
+            <p>Do you have an account?</p>
+            <a href="/login" class="btn btn-primary me-3">Yes</a>
+            <a href="/register" class="btn btn-secondary">No</a>
+        </div>
 
     {% else %}
+
         {% if prefs %}
-            <div class="card shadow-sm p-3 mb-3">
-                <h5>Your Preferences:</h5>
-                <p><strong>Region:</strong> {{ prefs.region }}</p>
-                <p><strong>Budget:</strong> {{ prefs.budget }}</p>
-                <!-- <p><strong>Occasion:</strong> {{ prefs.occasion }}</p> -->
-                <p><strong>Cuisine:</strong> {{ prefs.cuisine }}</p>
-                <p><strong>Category:</strong> {{ prefs.category }}</p> 
-                <a class="btn btn-primary" href="/dashboard" role="button">Edit</a>
-                <!-- <p><strong>Dietary Restrictions:</strong> {{ prefs.dietary_restrictions }}</p> -->
-                <!-- <p><strong>Vibe:</strong> {{ prefs.vibe }}</p> -->
+        <!-- Preferences Card -->
+        <div class="card shadow-sm p-4 mb-4">
+            <h5 class="mb-3">Your Preferences</h5>
+            <p><strong>Region:</strong> {{ (prefs.region | default('')).capitalize() }}</p>
+            <p><strong>Budget:</strong> {{ (prefs.budget | default('')).capitalize() }}</p>
+            <p><strong>Cuisine:</strong> {{ (prefs.cuisine | default('')).capitalize() }}</p>
+
+            <a class="btn btn-primary mt-2" href="/dashboard">Edit</a>
+        </div>
+
+        <!-- Main Results Card (ALL TABLES INSIDE THE SAME CARD) -->
+        <div class="card shadow-sm p-4">
+
+            {% if filtered_restaurants %}
+            <!-- Search Bar -->
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-8">
+                    <input name="search" id="search" autocomplete="off" 
+                           type="text" class="form-control" 
+                           placeholder="Search restaurant or location...">
+                </div>
             </div>
 
-            <div class="card shadow-sm p-3">
-                <h5>Recommended Restaurants:</h5>
-
-                {%if not filtered_restaurants %}
-                    <p>No such eating establishment</p>
-                {% endif %}    
-
-                {% if filtered_restaurants %}
-                <table>
+            <!-- Filtered Restaurants Table -->
+            <div class="table-responsive">
+                <table class="table table-striped w-100" style="table-layout: fixed;" >
                     <thead>
                         <tr>
-                            <th>Restaurants</th>
+                            <th>Restaurant</th>
                             <th>Location</th>
                         </tr>
                     </thead>
-
                     <tbody>
-                        {% for restaurant in filtered_restaurants%}
-                            <tr>
-                                <td><a href = "https://www.google.com/search?q={{restaurant['name']}}" class = "link-dark">{{restaurant["name"] | capitalize}}</a></td>
-                                <td>{{restaurant["address"] | capitalize}}</td>
-                            </tr>
+                        {% for restaurant in filtered_restaurants %}
+                        <tr>
+                            <td>
+                                <a href="https://www.google.com/search?q={{ restaurant['name'] }}" 
+                                class="link-dark">{{ restaurant["name"] | capitalize }} </a>
+                            </td>
+                            <td>{{ restaurant["address"] | capitalize }}</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
-                    {% endif %}
-               
                 </table>
             </div>
 
+            {% else %}
+            <!-- No Match Found -->
+            <h5>No such eating establishment</h5>
+            <p>You may like:</p>
+            {% endif %}
+
+            <!-- Also Like Restaurants (ALWAYS SAME CONTAINER/TABLE STYLE) -->
+            <h5 class="mt-4">You may also like:</h5>
+            <div class="table-responsive">
+                <table class="table table-striped w-100" style="table-layout: fixed;" >
+                    <thead>
+                        <tr>
+                            <th>Restaurant</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for restaurant in also_like_restaurants %}
+                        <tr>
+                            <td> 
+                                <a href="https://www.google.com/search?q={{ restaurant['name'] }}" 
+                                class="link-dark">{{ restaurant["name"] | capitalize }} </a>
+                            </td>
+                            <td>{{ restaurant["address"] | capitalize }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <!-- End Main Results Card -->
 
         {% else %}
+        <div class="text-center">
             <p>No preferences submitted yet.</p>
             <a href="/dashboard" class="btn btn-success mt-3">Set Your Preferences</a>
+        </div>
         {% endif %}
+
     {% endif %}
 </div>
 
+<script>
+    let input = document.getElementById("search");
+    input.addEventListener("keyup", function(){
+        let filter = input.value.toLowerCase();
+
+        let bodies = document.querySelectorAll("table tbody")
+
+        bodies.forEach((tbody) =>{
+            let rows = tbody.getElementsByTagName("tr");
+            for (let i = 0; i<rows.length; i++){
+                let nameCell = rows[i].getElementsByTagName('td')[0];
+                let locationCell = rows[i].getElementsByTagName('td')[1]
+                let match = false;
+
+                if (nameCell){
+                    let name = nameCell.textContent.toLowerCase();
+                    if (name.indexOf(filter) > -1){
+                        match = true;
+                    }
+                 }
+            //don't use ... in name as in is used to find keys in an array, not finding characters in a string
+            //instead, the standard way is to use indexOf(...) > -1
+            //indexOf(...) checks for first occurrence of the character in the string and returns the index
+            //if not found, it returns -1
+                if (locationCell && !match){
+                    let location = locationCell.textContent.toLowerCase();
+                    if (location.indexOf(filter) > -1 ){
+                        match = true;
+                    }
+                }
+            //ensures match is found if text is in the name or in the location
+
+                if (match){
+                    rows[i].style.display = ""; //setting display = "" shows the row value itself,if not it shows table-row
+                }
+                else{
+                    rows[i].style.display = "none" //hides the row
+                }
+            }
+        });
+    });
+
+    //document.getElementById(...) selects a particular element
+    //document.querySelector(...) selects the first match of an object (can be used for selecting multiple things such as the whole table or table rows)
+    //xxx.getElementsByTagName(...) selects all nested elements 
+    // .value is used for form content like input
+    // .innerhtml is to see all html tags ie **hello** becomes </b>hello</b>
+    // .textcontent is used to retrieve raw text value, ignores html
+    // .innertext returns text but follows html ie a div with display:none = hidden will return "" for innertext
+
+</script>
+
 {% endblock %}
+

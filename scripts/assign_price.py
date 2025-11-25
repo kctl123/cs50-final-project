@@ -10,7 +10,6 @@ db = conn.cursor()
 budget_map = {
     "cheap": (0,15),
     "medium": (15,40),
-    "expensive": (40, 999)
 }
 
 

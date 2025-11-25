@@ -34,6 +34,55 @@ def index():
 def about():
     return render_template("about.html")
 
+def get_historic_recommendations(db,user_id,filtered_restaurants):
+
+    current_pref = db.execute("SELECT * FROM preferences WHERE user_id = ? ORDER BY id DESC LIMIT 1",(user_id,)).fetchone()
+    #must order by id and limit 1 because a user can make multiple preferences, must ensure the latest one
+    current_region = current_pref["region"]
+    current_budget = current_pref["budget"]
+
+    top_cuisines_query = """
+    SELECT cuisine, COUNT(cuisine) as count
+    FROM preferences
+    WHERE user_id = ?
+    GROUP BY cuisine
+    ORDER BY count DESC
+    LIMIT 3;
+    """
+    top_cuisines_data = db.execute(top_cuisines_query, (user_id,)).fetchall()
+    if not top_cuisines_data:
+        return []
+    
+    all_frequent_cuisines = set() #discards any duplicates, ensures unique values
+    for row in top_cuisines_data:
+        cuisines = row["cuisine"].split(',')
+        for cuisine in cuisines:
+            all_frequent_cuisines.add((cuisine.strip()).lower())
+    frequent_cuisine_list = list(all_frequent_cuisines)
+    cuisine_placeholders = ','.join(["?"] * len(frequent_cuisine_list))
+    
+    excluded_names = [r["name"] for r in filtered_restaurants] #prevent duplicate restaurants from showing up
+    excluded_placeholders = ",".join(["?"] * len(filtered_restaurants)) #creates something like [?, ?, ?]
+    #which then becomes ?, ?, ? 
+
+    if not excluded_names:
+        excluded_placeholders = "?"
+        excluded_names = ["Non-existent"]
+
+    query = f"""
+            SELECT name, address, price_range
+            FROM restaurants
+            WHERE name NOT IN ({excluded_placeholders})
+            AND region = ?
+            AND price_range = ?
+            AND LOWER(cuisine) IN ({cuisine_placeholders})
+            LIMIT 30;
+    """
+
+    params = excluded_names + [current_region] + [current_budget] + frequent_cuisine_list 
+    recommendations = db.execute(query, params).fetchall()
+    return recommendations
+
 @app.route("/recommend", methods=["GET", "POST"])
 def recommend():
     db = get_db()
@@ -49,7 +98,7 @@ def recommend():
         region = request.form.get("region")
         region = region.capitalize()
         budget = request.form.get("budget")
-        category = request.form.get("category")
+        #category = request.form.get("category")
         #occasion = request.form.get("occasion")
 
         #Multi-select fields
@@ -79,7 +128,7 @@ def recommend():
             flash("At least one cuisine must be selected.", "danger")
             return redirect("/dashboard")
         
-        if not category:
+        # if not category:
             flash("At least one category must be selected.", "danger")
             return redirect("/dashboard")
         
@@ -91,29 +140,35 @@ def recommend():
             flash("At least one vibe must be selected.", "danger")
             return redirect("/dashboard")
     
-        db.execute("INSERT INTO preferences (user_id, region, budget, cuisine, category) VALUES (?, ?, ?, ?, ?)",
-                (user_id, region, budget, cuisine_str, category))
+        db.execute("INSERT INTO preferences (user_id, region, budget, cuisine) VALUES (?, ?, ?, ?)",
+                (user_id, region, budget, cuisine_str))
         db.commit()
     
     prefs = db.execute("SELECT * FROM preferences WHERE user_id = ? ORDER BY id DESC LIMIT 1", (user_id,)).fetchone()
-    cuisines = prefs["cuisine"].split(",")
-    cuisines = [c.lower() for c in cuisines]
-    placeholders = ",".join(["?"] * len(cuisines))
+
+    filtered_restaurants = []
+    if prefs:
+        current_region = prefs["region"]
+        current_budget = prefs["budget"]
+        cuisines = prefs["cuisine"].split(",")
+        cuisines = [c.lower() for c in cuisines]
+        placeholders = ",".join(["?"] * len(cuisines))
+    
+    else:
+        return render_template("dashboard.html")
 
     q = f"""
     SELECT * 
     FROM(
         SELECT *,
-            (CASE WHEN cuisine IN ({placeholders}) AND category = ? THEN 5 ELSE 0 END +
-             CASE WHEN price_range = ? THEN 2 ELSE 0 END 
+            (CASE WHEN cuisine IN ({placeholders}) AND price_range = ? THEN 5 ELSE 0 END 
             ) AS score
         FROM restaurants
         WHERE cuisine != 'unknown'
         AND region = ?
     ) AS ranked
-    WHERE score >= 5
-    ORDER BY score DESC
-    LIMIT 50;
+    WHERE score = 5
+    ORDER BY score DESC;
         """
     #parantheses are necessary due to SQL precedence, it will do AND first 
     #with parantheses it works as intended, without parantheses it will be
@@ -123,10 +178,10 @@ def recommend():
     #max score is 8, each case is assessed individually 
     #When creating a separate score column, must use a comma after SELECT to separate the columns
     #Must use + when using multiple CASE
-    params = cuisines + [category, budget, region]
-    
+    params = cuisines + [current_budget, current_region]
     filtered_restaurants = db.execute(q, params).fetchall()
-    return render_template("recommend.html", prefs=prefs, filtered_restaurants = filtered_restaurants)
+    also_like_restaurants = get_historic_recommendations(db, user_id, filtered_restaurants)
+    return render_template("recommend.html", prefs=prefs, filtered_restaurants = filtered_restaurants, also_like_restaurants = also_like_restaurants)
     
 
 @app.route("/register", methods=["GET","POST"])
@@ -217,11 +272,13 @@ def forgot():
             return redirect("/forgot")
         
         user = db.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+
         if user is None:
             flash("Username not found.", "danger")
             return redirect("/forgot") 
         
-        return render_template("reset.html", username=username) #running the reset.html template UNDER the /forgot route, the /reset route here is NOT USED  until the user clicks submit as that is the form action
+        return render_template("reset.html", username=username) 
+    #running the reset.html template UNDER the /forgot route, the username is submitted to the /forgot route, afterwhich the reset.html template is used
     
     return render_template("forgot.html")
 
@@ -256,6 +313,15 @@ def reset():
         return redirect("/login")
 
     return render_template("reset.html")
+
+@app.route("/history")
+def history():
+    db = get_db()
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect("/login")
+    history = db.execute("SELECT * FROM preferences WHERE user_id = ? ORDER BY created_at DESC LIMIT 20",(user_id,)).fetchall()
+    return render_template("history.html", history = history)
 
 @app.route("/logout")
 def logout():
