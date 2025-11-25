@@ -1,5 +1,5 @@
 # Restaurant Recommender
-#### Video Demo:  <(https://youtu.be/ePKPC4QKg3I)>
+#### Video Demo: https://youtu.be/ePKPC4QKg3I
 #### Description:
 
 Restaurant Recommender was created as I found deciding what to eat whenever I went on an outing with my friends or family a hassle. What Restaurant Recommender does is that by inputting a cuisine, region and budget, it recommends you places that fulfil that criteria. I also decided to implement a "You may also like" feature as I always found that feature quite intriguing and I wanted to figure out how to do it. The AI tools I used were ChatGPT and Copilot, the former for breaking down new concepts like how to use API's and how to structure my code whereas the latter was used for its autocomplete function, saving me time when it comes to the boilerplate stuff. 
